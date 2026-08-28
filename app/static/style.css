@@ -173,3 +173,14 @@ body.tools table.events { background: #fff; }
 @media print {
   .site-head, .site-foot, form.filters, .noprint { display: none !important; }
 }
+
+/* "What do these terms mean?" key (list + calendar views, embed-safe) */
+details.type-key { margin: 0 0 14px; font-size: 13px; }
+details.type-key summary { cursor: pointer; color: #681e12; font-weight: 600; width: fit-content; }
+details.type-key summary:hover { text-decoration: underline; }
+details.type-key dl { margin: 8px 0 0; padding: 10px 14px; background: #fff; border: 1px solid #e2e4e7;
+  border-radius: 6px; columns: 2; column-gap: 28px; }
+details.type-key dt { font-weight: 700; break-inside: avoid; }
+details.type-key dd { margin: 1px 0 8px 17px; color: #444a52; break-inside: avoid; }
+details.type-key dt .chip { width: 11px; height: 11px; margin-right: 6px; }
+@media (max-width: 640px) { details.type-key dl { columns: 1; } }

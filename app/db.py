@@ -16,6 +16,22 @@ SHOW_TYPES = [
     "Concurrent Specialty", "Supported Entry", "Group Show",
 ]
 
+# One-line definitions shown as tooltips and in the "What do these terms mean?" key.
+TYPE_DEFS = {
+    "National Specialty": "The parent club's (ESSFTA's) flagship annual show for the breed — "
+                          "multi-day, with Sweepstakes and the Futurity.",
+    "Specialty": "A show for English Springer Spaniels only, hosted by a breed club with its "
+                 "own judging and full championship points.",
+    "Designated Specialty": "The club designates the Springer breed judging at an all-breed or "
+                            "group show as its specialty — wins carry specialty status.",
+    "Concurrent Specialty": "A separate specialty with its own judging, held on the same day "
+                            "and grounds as an all-breed or group show.",
+    "Supported Entry": "The club backs the breed entry at another club's show with trophies "
+                       "and prizes — regular breed judging, not a specialty.",
+    "Group Show": "A show for one AKC group — here the Sporting Group — with breed judging "
+                  "plus group placements.",
+}
+
 DEFAULT_TYPE_COLORS = {  # dark enough for white text, distinct from each other
     "National Specialty": "#681e12",     # ESSFTA brand maroon
     "Specialty": "#2f5fa5",              # blue

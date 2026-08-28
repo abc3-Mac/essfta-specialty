@@ -36,6 +36,12 @@
   {% endfor %}
   {% endfor %}
 </table>
+<div style="margin-top:16px;font-size:10.5px;color:#333;column-count:2;column-gap:28px">
+  <div style="font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.06em;column-span:all;margin-bottom:4px">Show types</div>
+  {% for t, d in TYPE_DEFS.items() %}
+  <div style="break-inside:avoid;margin-bottom:4px"><strong>{{ t }}</strong> — {{ d }}</div>
+  {% endfor %}
+</div>
 <script>window.print && setTimeout(() => window.print(), 400);</script>
 </body>
 </html>

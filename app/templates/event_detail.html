@@ -10,7 +10,8 @@
   {% if ev.title and ev.club and ev.title != ev.club %}<p class="meta">{{ ev.title }}</p>{% endif %}
   <table class="detail">
     <tr><th>Date</th><td>{{ fmt_dates(ev.start_date, ev.end_date) }} ({{ fmt_days(ev.start_date, ev.end_date) }}), {{ ev.start_date[:4] }}</td></tr>
-    <tr><th>Show type</th><td>{{ ev.show_type }}</td></tr>
+    <tr><th>Show type</th><td>{{ ev.show_type }}
+      {% if TYPE_DEFS.get(ev.show_type) %}<br><small style="color:#55606e">{{ TYPE_DEFS[ev.show_type] }}</small>{% endif %}</td></tr>
     {% if ev.city or ev.state or ev.venue %}
     <tr><th>Location</th><td>{{ ev.venue }}{% if ev.venue and (ev.city or ev.state) %} — {% endif %}{{ ev.city }}{% if ev.city and ev.state %}, {% endif %}{{ ev.state }}</td></tr>
     {% endif %}

@@ -6,7 +6,7 @@
 <title>{% block title %}ESSFTA Specialty Shows{% endblock %}</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&family=PT+Serif:wght@400;700&display=swap">
-<link rel="stylesheet" href="/static/style.css?v=20260828">
+<link rel="stylesheet" href="/static/style.css?v=20260828b">
 </head>
 <body class="{% if embed %}embed{% endif %}{% block bodyclass %}{% endblock %}">
 {% if embed %}
@@ -14,7 +14,7 @@
   <a href="/?embed=1" class="{% if view == 'list' %}on{% endif %}">List</a>
   <a href="/calendar?embed=1" class="{% if view == 'calendar' %}on{% endif %}">Calendar</a>
   <span class="legend">
-  {% for t in SHOW_TYPES %}<span class="chip" style="background:{{ TYPE_COLORS[t] }}"></span>{{ t }}&nbsp;{% endfor %}
+  {% for t in SHOW_TYPES %}<span title="{{ TYPE_DEFS[t] }}"><span class="chip" style="background:{{ TYPE_COLORS[t] }}"></span>{{ t }}</span>&nbsp;{% endfor %}
   </span>
 </div>
 {% endif %}
@@ -36,7 +36,7 @@
 {% if not embed %}
 <footer class="site-foot">
   <span class="legend">
-  {% for t in SHOW_TYPES %}<span class="chip" style="background:{{ TYPE_COLORS[t] }}"></span>{{ t }}&nbsp;&nbsp;{% endfor %}
+  {% for t in SHOW_TYPES %}<span title="{{ TYPE_DEFS[t] }}"><span class="chip" style="background:{{ TYPE_COLORS[t] }}"></span>{{ t }}</span>&nbsp;&nbsp;{% endfor %}
   </span>
 </footer>
 {% endif %}

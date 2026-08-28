@@ -25,6 +25,8 @@
   <button>Apply</button>
 </form>
 
+{% include "_type_key.html" %}
+
 {% if not months %}<p>No shows match.</p>{% endif %}
 {% for key, evs in months.items() %}
 <div class="month-band">{{ month_name(key) }}</div>
@@ -47,7 +49,8 @@
         {% if ev.link_url %} · <a href="{{ ev.link_url }}" target="_blank" rel="noopener">entry info</a>{% endif %}
       </div>
     </td>
-    <td><span class="badge" style="background:{{ TYPE_COLORS.get(ev.show_type, '#9aa3ad') }};color:#fff">{{ ev.show_type }}</span></td>
+    <td><span class="badge" style="background:{{ TYPE_COLORS.get(ev.show_type, '#9aa3ad') }};color:#fff"
+              title="{{ TYPE_DEFS.get(ev.show_type, '') }}">{{ ev.show_type }}</span></td>
     <td>{{ ev.city }}</td>
     <td>{{ ev.state }}</td>
   </tr>

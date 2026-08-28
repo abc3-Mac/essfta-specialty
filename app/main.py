@@ -66,6 +66,7 @@ templates.env.globals.update(
     fmt_closing=fmt_closing,
     SHOW_TYPES=db.SHOW_TYPES,
     TYPE_COLORS=db.TYPE_COLORS,
+    TYPE_DEFS=db.TYPE_DEFS,
 )
 
 

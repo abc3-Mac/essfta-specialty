@@ -1,0 +1,9 @@
+<details class="type-key">
+  <summary>What do these terms mean?</summary>
+  <dl>
+    {% for t in SHOW_TYPES %}
+    <dt><span class="chip" style="background:{{ TYPE_COLORS[t] }}"></span>{{ t }}</dt>
+    <dd>{{ TYPE_DEFS[t] }}</dd>
+    {% endfor %}
+  </dl>
+</details>

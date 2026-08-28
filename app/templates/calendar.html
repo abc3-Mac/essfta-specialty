@@ -19,6 +19,8 @@
   <button>Apply</button>
 </form>
 
+{% include "_type_key.html" %}
+
 <div class="cal-nav">
   {% if allow_prev %}<a href="?month={{ prev_m }}{% if embed %}&embed=1{% endif %}">&larr; prev</a>{% endif %}
   <h2>{{ month_label }}</h2>
