@@ -68,6 +68,7 @@ CREATE TABLE IF NOT EXISTS users (
     username TEXT UNIQUE NOT NULL,
     display_name TEXT NOT NULL,
     role TEXT NOT NULL CHECK(role IN ('editor','admin')),
+    email TEXT DEFAULT '',
     pw_hash TEXT NOT NULL,
     active INTEGER NOT NULL DEFAULT 1,
     created_at TEXT NOT NULL
@@ -157,6 +158,9 @@ def connect():
 def init():
     con = connect()
     con.executescript(SCHEMA)
+    cols = [r[1] for r in con.execute("PRAGMA table_info(users)")]
+    if "email" not in cols:  # migration: editor invites are emailed via Mailgun
+        con.execute("ALTER TABLE users ADD COLUMN email TEXT DEFAULT ''")
     con.commit()
     con.close()
 
@@ -174,7 +178,7 @@ def get_user(username, include_inactive=False):
 def list_users():
     con = connect()
     rows = [dict(r) for r in con.execute(
-        "SELECT id, username, display_name, role, active, created_at FROM users "
+        "SELECT id, username, display_name, role, email, active, created_at FROM users "
         "ORDER BY role DESC, username")]
     con.close()
     return rows
@@ -187,11 +191,11 @@ def set_user_active(username, active):
     con.close()
 
 
-def create_user(username, display_name, role, pw_hash):
+def create_user(username, display_name, role, pw_hash, email=""):
     con = connect()
     con.execute(
-        "INSERT INTO users (username, display_name, role, pw_hash, created_at) VALUES (?,?,?,?,?)",
-        (username, display_name, role, pw_hash, now()),
+        "INSERT INTO users (username, display_name, role, email, pw_hash, created_at) VALUES (?,?,?,?,?,?)",
+        (username, display_name, role, email, pw_hash, now()),
     )
     con.commit()
     con.close()

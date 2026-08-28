@@ -13,7 +13,7 @@ from fastapi.responses import HTMLResponse, PlainTextResponse, RedirectResponse,
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from . import auth, db, xlsx_io
+from . import auth, db, mail, xlsx_io
 
 app = FastAPI(title="ESSFTA Specialty Shows")
 HERE = os.path.dirname(__file__)
@@ -601,11 +601,12 @@ def generate_password():
     return "-".join(secrets.token_hex(2) for _ in range(3))
 
 
-def render_users(request, user, sess, new_password=None, pw_for=None):
+def render_users(request, user, sess, new_password=None, pw_for=None, mail_note=None):
     return templates.TemplateResponse(request, "users.html", {
         "user": user, "csrf": sess["csrf"], "users": db.list_users(),
         "last_seen": db.last_seen_map(),
         "new_password": new_password, "pw_for": pw_for,
+        "mail_note": mail_note, "mail_on": mail.configured(),
     })
 
 
@@ -671,7 +672,7 @@ def audit_page(request: Request):
 
 @app.post("/users/new")
 def add_editor(request: Request, username: str = Form(...), display_name: str = Form(...),
-               role: str = Form("editor"), csrf: str = Form(...)):
+               role: str = Form("editor"), email: str = Form(""), csrf: str = Form(...)):
     user, sess, redir = require_admin(request)
     if redir:
         return redir
@@ -680,9 +681,17 @@ def add_editor(request: Request, username: str = Form(...), display_name: str = 
     username = username.strip().lower()
     if not username.isalnum() or db.get_user(username, include_inactive=True):
         return PlainTextResponse("Username taken or invalid (letters/numbers only)", status_code=400)
+    email = email.strip()
+    if email and ("@" not in email or " " in email):
+        return PlainTextResponse("That email address doesn't look right", status_code=400)
     pw = generate_password()
-    db.create_user(username, display_name.strip(), role, auth.hash_password(pw))
-    return render_users(request, user, sess, new_password=pw, pw_for=username)
+    db.create_user(username, display_name.strip(), role, auth.hash_password(pw), email=email)
+    mail_note = None
+    if email:
+        err = mail.send_invite(email, display_name.strip(), username, pw)
+        mail_note = (f"Sign-in details emailed to {email}." if err is None else
+                     f"Could not email {email} ({err}) — hand the password over yourself.")
+    return render_users(request, user, sess, new_password=pw, pw_for=username, mail_note=mail_note)
 
 
 @app.post("/users/{username}/resetpw")
@@ -695,7 +704,12 @@ def reset_password(request: Request, username: str, csrf: str = Form(...)):
         return PlainTextResponse("Bad request", status_code=403)
     pw = generate_password()
     db.set_password(username, auth.hash_password(pw))
-    return render_users(request, user, sess, new_password=pw, pw_for=username)
+    mail_note = None
+    if target.get("email"):
+        err = mail.send_invite(target["email"], target["display_name"], username, pw, is_reset=True)
+        mail_note = (f"New password emailed to {target['email']}." if err is None else
+                     f"Could not email {target['email']} ({err}) — hand the password over yourself.")
+    return render_users(request, user, sess, new_password=pw, pw_for=username, mail_note=mail_note)
 
 
 @app.post("/users/{username}/active")

@@ -12,16 +12,18 @@
 <div class="error" style="background:#eef7ee;border-color:#7fb87f;color:#1e4d1e">
   Password for <strong>{{ pw_for }}</strong>: <code style="font-size:16px">{{ new_password }}</code>
   — copy it now; it is shown only this once.
+  {% if mail_note %}<br>{{ mail_note }}{% endif %}
 </div>
 {% endif %}
 
 <table class="events">
-  <tr><th>Username</th><th>Name</th><th>Role</th><th>Status</th><th>Last signed in (UTC)</th><th></th></tr>
+  <tr><th>Username</th><th>Name</th><th>Role</th><th>Email</th><th>Status</th><th>Last signed in (UTC)</th><th></th></tr>
   {% for u in users %}
   <tr>
     <td><code>{{ u.username }}</code></td>
     <td>{{ u.display_name }}</td>
     <td>{{ u.role }}</td>
+    <td>{{ u.email or "—" }}</td>
     <td>{% if u.active %}active{% else %}<strong style="color:#a02020">deactivated</strong>{% endif %}</td>
     <td>{% if last_seen.get(u.username) %}{{ last_seen[u.username] }}{% else %}<span style="color:#a06020">never</span>{% endif %}</td>
     <td class="actions">
@@ -61,9 +63,15 @@
       <div><label>Role</label>
         <select name="role"><option value="editor">editor</option><option value="admin">admin</option></select>
       </div>
+      <div><label>Email <small>(optional{% if mail_on %} — sign-in details are emailed automatically{% endif %})</small></label>
+        <input type="email" name="email" placeholder="name@example.com"></div>
     </div>
     <button class="btn">Create account</button>
-    <p><small>The password is generated automatically and shown once — hand it to the new editor.
+    <p><small>The password is generated automatically and shown once.
+    {% if mail_on %}If you give an email address, the new editor is sent their username and
+    password automatically, and future password resets go to that address too. Without one,
+    hand the password over yourself.{% else %}Hand it to the new editor yourself (email
+    sending is not configured on this server).{% endif %}
     Editors can add and edit every show; admins can also remove shows, manage accounts, and change settings.</small></p>
   </fieldset>
 </form>
