@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Specialty Shows — embed demo</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&family=PT+Serif:wght@700&display=swap">
+<style>
+  /* Styled to match englishspringerspaniels.org (Avada theme):
+     brand #681e12, text #141617, page bg #f2f3f5, Raleway body, PT Serif headings. */
+  body { margin: 0; font: 15px/1.55 Raleway, Helvetica, Arial, sans-serif; color: #141617; background: #f2f3f5; }
+  .top-strip { background: #681e12; height: 34px; }
+  .wp-head { background: #fff; padding: 22px 24px 16px; text-align: center; }
+  .wp-head img { max-width: 520px; width: 90%; height: auto; }
+  .wp-head .tag { font-size: 12.5px; color: #8a8f94; font-style: italic; margin-top: 8px; }
+  .wp-menu { background: #681e12; text-align: center; font-size: 14px; font-weight: 600; }
+  .wp-menu span { display: inline-block; color: #fff; padding: 13px 16px; }
+  .wp-content-outer { background: #f2f3f5; padding: 28px 16px 40px; }
+  .wp-content { max-width: 1080px; margin: 0 auto; background: #fff; padding: 28px 32px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .wp-content h1 { font-family: "PT Serif", Georgia, serif; font-size: 30px; color: #141617; margin: 0 0 14px; }
+  .demo-note { background: #fdf6ec; border: 1px solid #e3cfa2; border-radius: 4px; padding: 10px 14px; font-size: 13.5px; margin-bottom: 18px; }
+  .demo-note code { background: #f2f3f5; padding: 0 4px; }
+  a { color: #681e12; }
+  iframe#essfta-specialty { width: 100%; border: 0; min-height: 600px; }
+  .wp-foot { background: #212326; color: #b9bcbe; margin-top: 0; padding: 22px 24px; font-size: 12.5px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="top-strip"></div>
+<div class="wp-head">
+  <img src="/static/img/essfta-logo.png" alt="English Springer Spaniel Field Trial Association">
+  <div class="tag">demo mock of englishspringerspaniels.org — NOT the real site</div>
+</div>
+<nav class="wp-menu">
+  <span>Events&nbsp;&nbsp;▸&nbsp;&nbsp;Specialty Shows</span>
+</nav>
+<div class="wp-content-outer">
+<div class="wp-content">
+  <h1>Specialty Shows</h1>
+  <div class="demo-note">
+    <strong>Demo page.</strong> Everything below the line is the live specialty-show calendar
+    inside an <code>&lt;iframe&gt;</code> — exactly the snippet that goes on the WordPress page.
+    Resize the window or switch to Calendar to see the frame grow and shrink with its content.
+  </div>
+  <hr style="border:0;border-top:1px solid #e2e4e7">
+
+  <!-- ==== THE SNIPPET THAT GOES INTO WORDPRESS (Code Block element) ==== -->
+  <iframe id="essfta-specialty" src="/?embed=1" title="ESSFTA Specialty Shows"></iframe>
+  <script>
+    window.addEventListener("message", function (e) {
+      if (e.data && e.data.essftaSpecialtyHeight) {
+        document.getElementById("essfta-specialty").style.height =
+          (e.data.essftaSpecialtyHeight + 20) + "px";
+      }
+    });
+  </script>
+  <!-- ==== END SNIPPET (in WordPress, src becomes https://essfta-specialty.collver.biz/?embed=1) ==== -->
+
+</div>
+</div>
+<div class="wp-foot">© English Springer Spaniel Field Trial Association — demo footer</div>
+</body>
+</html>

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Audit log — ESSFTA Specialty Shows{% endblock %}
+{% block bodyclass %} tools{% endblock %}
+{% block content %}
+<div class="dash-head">
+  <h2>Audit log</h2>
+  <a class="btn small ghost" href="/dashboard">&larr; dashboard</a>
+  <a class="btn small ghost" href="/users">Manage editors</a>
+</div>
+
+<h3>Sign-ins</h3>
+<form class="filters" method="get">
+  <label>Account
+    <select name="user" onchange="this.form.submit()">
+      <option value="">All accounts</option>
+      {% for u in usernames %}<option value="{{ u }}" {% if f_user == u %}selected{% endif %}>{{ u }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>From <input type="date" name="from" value="{{ f_from or '' }}" onchange="this.form.submit()"></label>
+  <label>To <input type="date" name="to" value="{{ f_to or '' }}" onchange="this.form.submit()"></label>
+  {% if f_user or f_from or f_to %}<a class="btn small ghost" href="/audit">Clear filters</a>{% endif %}
+</form>
+
+{% if logins %}
+<table class="events">
+  <tr><th>When (UTC)</th><th>Account</th><th>What</th><th>IP address</th><th>Browser</th></tr>
+  {% for l in logins %}
+  <tr {% if l.event in ('login_failed', 'rate_limited') %}style="background:#fbeaea"{% endif %}>
+    <td>{{ l.at }}</td>
+    <td><code>{{ l.username }}</code></td>
+    <td>{% if l.event == 'login_ok' %}<span style="color:#1e6d1e">signed in</span>
+        {% elif l.event == 'logout' %}signed out
+        {% elif l.event == 'rate_limited' %}<strong style="color:#a02020">BLOCKED — too many attempts</strong>
+        {% else %}<strong style="color:#a02020">FAILED sign-in</strong>{% endif %}</td>
+    <td><code>{{ l.ip }}</code></td>
+    <td><small>{{ l.user_agent[:70] }}</small></td>
+  </tr>
+  {% endfor %}
+</table>
+<p><small>Newest first, up to 500 entries. Failed attempts are shaded red — a run of red rows
+from one IP is someone guessing passwords.</small></p>
+{% else %}
+<p>No sign-in records match.</p>
+{% endif %}
+
+<h3 style="margin-top:28px">Recent show changes</h3>
+{% if changes %}
+<table class="events">
+  <tr><th>When (UTC)</th><th>Who</th><th>Did what</th><th>Show</th><th>Batch</th></tr>
+  {% for c in changes %}
+  <tr>
+    <td>{{ c.changed_at }}</td>
+    <td><code>{{ c.changed_by }}</code></td>
+    <td>{{ c.action }}</td>
+    <td>{% if c.club or c.title %}<a href="/event/{{ c.event_id }}">{{ c.club or c.title }}</a>
+        {% if c.start_date %}<small style="color:#889"> {{ c.start_date }}</small>{% endif %}
+        {% if c.show_type %}<small style="color:#889"> · {{ c.show_type }}</small>{% endif %}
+        {% else %}<small>show #{{ c.event_id }}</small>{% endif %}</td>
+    <td>{% if c.batch_id %}<code>{{ c.batch_id }}</code>{% else %}—{% endif %}</td>
+  </tr>
+  {% endfor %}
+</table>
+<p><small>The 150 most recent changes. "before-update" rows hold the show as it looked
+before an edit; bulk operations share a batch code and can be undone from the page that ran them.</small></p>
+{% else %}
+<p>No show changes recorded yet.</p>
+{% endif %}
+{% endblock %}

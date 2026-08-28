@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Spreadsheet tools — ESSFTA Specialty Shows{% endblock %}
+{% block bodyclass %} tools{% endblock %}
+{% block content %}
+<div class="dash-head">
+  <h2>Spreadsheet (Excel)</h2>
+  <a class="btn small ghost" href="/dashboard">&larr; dashboard</a>
+  <a class="btn small ghost" href="/help#excel">Help</a>
+</div>
+
+<div class="panel">
+<h3 style="margin-top:0">1 · Download</h3>
+<p><a class="btn small ghost" href="/template.xlsx">Blank template</a>
+<small> — one clean row per show, for adding brand-new shows.</small></p>
+<p style="margin-bottom:4px">Or download the shows already on the calendar to edit them:</p>
+<p>{% for y in years %}<a class="btn small ghost" href="/export.xlsx?year={{ y }}">{{ y }} shows</a> {% endfor %}
+{% if not years %}<small>(nothing on the calendar yet)</small>{% endif %}</p>
+</div>
+
+<div class="panel">
+<h3 style="margin-top:0">2 · Edit in Excel</h3>
+<p>Change dates, clubs, judges, closing dates, or locations right in the spreadsheet. The
+downloaded file has an <strong>EVENT ID</strong> column — leave it alone and your edits will
+update those same shows. Rows you add <em>without</em> an ID become new shows.</p>
+<p><strong>Have the master calendar workbook instead?</strong> The Google-Sheet / Excel
+"ESS Specialty &amp; Supported Entry Calendar" (MONTH/DATES … SWEEPSTAKES/FUTURITY JUDGE)
+can be uploaded <em>as-is</em> — month rows, second-show rows, and shorthand dates like
+"4-Sept" are all understood. Because that file's typed years are often left over from the
+year before, pick the calendar year below and the dates are read against it; you'll see
+exactly what the site understood before anything is saved.</p>
+<p><strong>Making next year's calendar from this year's?</strong> Download this year, change
+the dates to next year, then tick the box below when uploading so every row is treated as a
+<em>new</em> show. (The <a href="/rollforward">Roll a year forward</a> page does the same
+thing without Excel.)</p>
+</div>
+
+<div class="panel">
+<h3 style="margin-top:0">3 · Upload</h3>
+<form method="post" action="/import" enctype="multipart/form-data">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <label style="font-size:13px;display:block;margin-bottom:8px">Calendar year of the file
+    <select name="calendar_year">
+      {% for y in [this_year - 1, this_year, this_year + 1, this_year + 2] %}
+      <option value="{{ y }}" {% if y == this_year %}selected{% endif %}>{{ y }}</option>
+      {% endfor %}
+    </select>
+    <small>(only matters for the master workbook format — its typed years aren't trusted)</small>
+  </label>
+  <label style="display:block;margin-bottom:8px">
+    <input type="checkbox" name="as_new" value="1">
+    Treat every row as a <strong>new</strong> show (ignore the EVENT ID column — for next year's calendar)
+  </label>
+  <input type="file" name="file" accept=".xlsx" required>
+  <button class="btn small">Upload</button>
+</form>
+<p><small>Uploads never change anything silently: you get a full preview — including every
+date or spelling the parser normalized — for confirmation first, rows that match a show
+already on the calendar are skipped, and the whole upload can be undone in one click afterward.</small></p>
+</div>
+{% endblock %}

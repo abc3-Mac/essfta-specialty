@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ ev.club or ev.title }} — ESSFTA Specialty Shows{% endblock %}
+{% block content %}
+<p><a href="javascript:history.back()">&larr; back</a></p>
+<div class="detail-card" style="border-top: 6px solid {{ TYPE_COLORS.get(ev.show_type, '#9aa3ad') }}">
+  <h2>{{ ev.club or ev.title }}
+    {% if ev.status == 'canceled' %}<span class="badge cancel">CANCELED</span>{% endif %}
+    {% if ev.status == 'postponed' %}<span class="badge postponed">POSTPONED</span>{% endif %}
+  </h2>
+  {% if ev.title and ev.club and ev.title != ev.club %}<p class="meta">{{ ev.title }}</p>{% endif %}
+  <table class="detail">
+    <tr><th>Date</th><td>{{ fmt_dates(ev.start_date, ev.end_date) }} ({{ fmt_days(ev.start_date, ev.end_date) }}), {{ ev.start_date[:4] }}</td></tr>
+    <tr><th>Show type</th><td>{{ ev.show_type }}</td></tr>
+    {% if ev.city or ev.state or ev.venue %}
+    <tr><th>Location</th><td>{{ ev.venue }}{% if ev.venue and (ev.city or ev.state) %} — {% endif %}{{ ev.city }}{% if ev.city and ev.state %}, {% endif %}{{ ev.state }}</td></tr>
+    {% endif %}
+    {% if ev.closing_date %}<tr><th>Entries close</th><td>{{ fmt_closing(ev.closing_date) }}, {{ ev.closing_date[:4] }}</td></tr>{% endif %}
+    {% if ev.superintendent %}<tr><th>Superintendent</th><td>{{ ev.superintendent }}</td></tr>{% endif %}
+    {% if ev.judge_regular %}<tr><th>Regular judge</th><td>{{ ev.judge_regular }}</td></tr>{% endif %}
+    {% if ev.judge_sweeps %}<tr><th>Sweeps / Futurity judge</th><td>{{ ev.judge_sweeps }}</td></tr>{% endif %}
+    {% if ev.link_url %}<tr><th>Entry info</th><td><a href="{{ ev.link_url }}" target="_blank" rel="noopener">{{ ev.link_url }}</a></td></tr>{% endif %}
+    {% if ev.notes %}<tr><th>Notes</th><td>{{ ev.notes }}</td></tr>{% endif %}
+  </table>
+</div>
+{% endblock %}

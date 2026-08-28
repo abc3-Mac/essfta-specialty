@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Help — ESSFTA Specialty Shows{% endblock %}
+{% block bodyclass %} tools{% endblock %}
+{% block content %}
+<div class="dash-head">
+  <h2>Help</h2>
+  <a class="btn small ghost" href="/dashboard">&larr; back to the dashboard</a>
+</div>
+
+<p style="max-width:64em">This page explains every button on the
+{% if user.role == 'admin' %}administrator{% else %}editor{% endif %} dashboard.
+The short version: <strong>nothing you do here can destroy a show</strong> — everything
+can be undone, and every change is recorded with your name on it.</p>
+
+<ul>
+  <li><a href="#past">No more hiding rows month by month</a></li>
+  <li><a href="#add">Adding a single show</a></li>
+  <li><a href="#edit">Editing a show</a></li>
+  <li><a href="#cancel">Cancel vs Hide{% if user.role == 'admin' %} vs Remove{% endif %} — which one do I want?</a></li>
+  <li><a href="#excel">Excel: upload the master calendar, edit shows, or draft next year</a></li>
+  <li><a href="#ticked">Ticking several shows at once (and shifting dates)</a></li>
+  <li><a href="#roll">Roll a year forward</a></li>
+  <li><a href="#undo">Undoing a bulk mistake</a></li>
+  <li><a href="#public">What the public actually sees</a></li>
+  {% if user.role == 'admin' %}<li><a href="#admin">Administrator tools</a></li>{% endif %}
+</ul>
+
+<h3 id="past">No more hiding rows month by month</h3>
+<p>With the old spreadsheet, keeping the calendar current meant hiding the upper rows as
+each month went by. Here that happens by itself: the public list and calendar show
+<strong>upcoming</strong> shows only, and a show drops off the day after it ends. Your
+dashboard always keeps the whole year (under "Past shows"), and the printable page can
+show the full year any time — for example for the monthly Facebook post.</p>
+
+<h3 id="add">Adding a single show</h3>
+<p>Click <strong>+ Add a show</strong>. Host club and first day are the only required
+fields — you can save with just those and come back later for judges and the closing date.
+The days of the week are worked out from the dates automatically; never type them.
+A back-to-back weekend (Show #1 / Show #2) is simply two entries.</p>
+
+<h3 id="edit">Editing a show</h3>
+<p>Click <strong>Edit</strong> on any row. Change the dates and the calendar and printable
+page all update themselves.</p>
+
+<h3 id="cancel">Cancel vs Hide{% if user.role == 'admin' %} vs Remove{% endif %}</h3>
+<ul>
+  <li><strong>Cancel</strong> — the show is off, and you want everyone to know.
+  It stays on the public calendar, struck through and marked CANCELED.
+  <em>Reinstate</em> undoes it.</li>
+  <li><strong>Hide</strong> — take it off the public site without changing anything.
+  The show stays right where it is on your dashboard with a gray <em>hidden</em> tag,
+  and <em>Unhide</em> puts it back. Use this for placeholders or not-yet-confirmed dates.</li>
+  {% if user.role == 'admin' %}
+  <li><strong>Remove</strong> (admins only) — for shows that shouldn't be on anyone's list
+  at all, e.g. a duplicate created by mistake. It moves to the "Removed shows" section at
+  the bottom of the dashboard, where <em>Restore</em> brings it back. Even Remove is not
+  a true delete — the show and its whole history are kept.</li>
+  {% endif %}
+</ul>
+
+<h3 id="excel">Excel: upload the master calendar, edit shows, or draft next year</h3>
+<p>The <strong>Spreadsheet (Excel)</strong> card on the dashboard covers three jobs:</p>
+<ul>
+  <li><strong>Upload the master calendar workbook</strong> — the familiar
+  "ESS Specialty &amp; Supported Entry Calendar" file (or an Excel download of the Google
+  Sheet) can be uploaded exactly as it is. Month rows, second-show rows, shorthand dates
+  like "4-Sept", and left-over years from the previous season are all understood, and you
+  are shown exactly what the site read — including every date it corrected — before
+  anything is saved.</li>
+  <li><strong>Edit existing shows</strong> — download the calendar's current shows for a
+  year. That file carries an <em>EVENT ID</em> column; change anything in Excel, re-upload,
+  and those same shows are updated, again behind a confirm-first preview with an Undo.</li>
+  <li><strong>Draft next year from this year</strong> — download this year, change the dates,
+  tick "treat every row as new" when uploading. (Or skip Excel entirely and use
+  <a href="/rollforward">Roll a year forward</a>.)</li>
+</ul>
+
+<h3 id="ticked">Ticking several shows at once</h3>
+<p>Every table on the dashboard has checkboxes (the box in the header row ticks a whole
+section). Tick some shows, pick an action in the bar above the tables — Hide, Unhide,
+Cancel, Reinstate{% if user.role == 'admin' %}, Remove, Restore{% endif %}, or
+<strong>Shift dates by N days</strong> — and click Apply. Shifting by 7 moves everything one
+week later and keeps the days of the week. Ticked-show runs are batches too, so they can
+be undone. Each row also has a <strong>Copy → next year</strong> button: one click copies
+that show to the same weekend next year and opens it for adjusting.</p>
+
+<h3 id="roll">Roll a year forward</h3>
+<p>Most shows run on the same weekend every year. <strong>Roll a year forward</strong>
+copies a year's shows into the next year in one step: each show lands on the
+<em>same weekend and the same day of the week</em>. Host club, show type, location, and
+superintendent carry over. Judges, closing dates, links, and notes do <em>not</em> — they
+change every year, so the new shows start blank. The preview shows every proposed show;
+untick any you don't want. Shows already entered for the new year are skipped
+automatically, and canceled shows are not copied.</p>
+
+<h3 id="undo">Undoing a bulk mistake</h3>
+<p>Every bulk run — a bulk hide or unhide, a ticked-shows action, a date shift, a
+spreadsheet upload, a roll-forward, a copy-to-next-year — is saved as a
+<em>batch</em>. The page that ran it shows an <strong>Undo</strong> button immediately
+afterward, and the Bulk hide / unhide page lists recent batches with their Undo buttons,
+so you can also undo later. Undo puts every show the batch touched back exactly as it was.</p>
+
+<h3 id="public">What the public actually sees</h3>
+<p>The public list and calendar show <strong>upcoming</strong> shows only — past shows
+drop off by themselves the day after they end (they're still on your dashboard under
+"Past shows"). Canceled shows stay visible, struck through. Hidden and removed shows never
+appear. The printable page shows the whole chosen year. The iCal feed carries scheduled
+shows only.</p>
+
+{% if user.role == 'admin' %}
+<h3 id="admin">Administrator tools</h3>
+<ul>
+  <li><strong>Manage editors</strong> (<a href="/users">/users</a>) — add an editor
+  (the password is generated and shown exactly once — copy it before leaving the page),
+  reset a password, deactivate an account (they can no longer sign in; their shows and
+  history remain).</li>
+  <li><strong>Audit log</strong> (<a href="/audit">/audit</a>) — every sign-in, failed
+  attempt (shaded red), and sign-out, plus a feed of recent show changes with who made
+  them. Failed attempts from an unfamiliar IP in a cluster mean someone is guessing
+  passwords — the built-in rate limit slows them down, but tell Albert.</li>
+  <li><strong>Public past-shows toggle</strong> — the "Public site" checkbox on the
+  dashboard decides whether visitors get an "include past shows" option.</li>
+  <li><strong>Show-type colors</strong> — the color swatches on the dashboard set each
+  show type's color across the whole site (calendar chips, legends, badges).
+  <em>Default colors</em> puts them back to the standard scheme. Pick darker shades —
+  white text is printed on top of them in several places.</li>
+</ul>
+{% endif %}
+
+<p style="margin-top:24px"><small>Questions or something not covered here — email Albert.</small></p>
+{% endblock %}

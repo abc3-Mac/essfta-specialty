@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}{% if is_new %}Add show{% else %}Edit show{% endif %} — ESSFTA Specialty Shows{% endblock %}
+{% block content %}
+<h2>{% if is_new %}Add a show{% else %}Edit: {{ ev.club or ev.title }}{% endif %}</h2>
+<p class="noprint"><a href="/dashboard">&larr; back to dashboard</a></p>
+
+<form class="event-form" method="post">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+
+  <fieldset>
+    <legend>The basics</legend>
+    <label>Host club</label>
+    <input type="text" name="club" value="{{ ev.club }}" required>
+    <label>Show title <small>(defaults fine — shown where a fuller name helps)</small></label>
+    <input type="text" name="title" value="{{ ev.title }}" placeholder="e.g. ESSC of Michigan Fall Specialty — Show #1" required>
+    <div class="row">
+      <div>
+        <label>First day</label>
+        <input type="date" name="start_date" value="{{ ev.start_date[:10] }}" required>
+      </div>
+      <div>
+        <label>Last day <small>(leave equal for one-day shows)</small></label>
+        <input type="date" name="end_date" value="{{ ev.end_date[:10] }}">
+      </div>
+    </div>
+    <p><small>Days of the week are shown automatically from the dates — no need to type them.
+    A back-to-back weekend (two shows) is two entries, one per show.</small></p>
+    <label>Show type</label>
+    <select name="show_type">
+      {% for t in SHOW_TYPES %}<option {% if ev.show_type == t %}selected{% endif %}>{{ t }}</option>{% endfor %}
+    </select>
+  </fieldset>
+
+  <fieldset>
+    <legend>Location</legend>
+    <div class="row">
+      <div><label>City</label><input type="text" name="city" value="{{ ev.city }}"></div>
+      <div><label>State / Province</label><input type="text" name="state" maxlength="2" value="{{ ev.state }}" placeholder="e.g. TN"></div>
+    </div>
+    <label>Venue / grounds <small>(optional)</small></label>
+    <input type="text" name="venue" value="{{ ev.venue }}">
+  </fieldset>
+
+  <fieldset>
+    <legend>Details (all optional)</legend>
+    <div class="row">
+      <div><label>Closing date</label><input type="date" name="closing_date" value="{{ ev.closing_date[:10] }}"></div>
+      <div><label>Superintendent / show secretary</label><input type="text" name="superintendent" value="{{ ev.superintendent }}" placeholder="e.g. Onofrio"></div>
+    </div>
+    <div class="row">
+      <div><label>Regular judge</label><input type="text" name="judge_regular" value="{{ ev.judge_regular }}"></div>
+      <div><label>Sweeps / Futurity judge</label><input type="text" name="judge_sweeps" value="{{ ev.judge_sweeps }}"></div>
+    </div>
+    <label>Premium / entry link</label>
+    <input type="url" name="link_url" value="{{ ev.link_url }}" placeholder="https://…">
+    <label>Notes</label>
+    <textarea name="notes" rows="3">{{ ev.notes }}</textarea>
+    {% if not is_new %}
+    <label>Status</label>
+    <select name="status">
+      {% for s in ["scheduled", "canceled", "postponed"] %}
+      <option value="{{ s }}" {% if ev.status == s %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+    {% endif %}
+  </fieldset>
+
+  <button class="btn">{% if is_new %}Add show{% else %}Save changes{% endif %}</button>
+</form>
+{% endblock %}

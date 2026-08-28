@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}ESSFTA Specialty Shows{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&family=PT+Serif:wght@400;700&display=swap">
+<link rel="stylesheet" href="/static/style.css?v=20260828">
+</head>
+<body class="{% if embed %}embed{% endif %}{% block bodyclass %}{% endblock %}">
+{% if embed %}
+<div class="embed-bar">
+  <a href="/?embed=1" class="{% if view == 'list' %}on{% endif %}">List</a>
+  <a href="/calendar?embed=1" class="{% if view == 'calendar' %}on{% endif %}">Calendar</a>
+  <span class="legend">
+  {% for t in SHOW_TYPES %}<span class="chip" style="background:{{ TYPE_COLORS[t] }}"></span>{{ t }}&nbsp;{% endfor %}
+  </span>
+</div>
+{% endif %}
+{% if not embed %}
+<header class="site-head">
+  <h1>ESSFTA Specialty Shows</h1>
+  <nav>
+    <a href="/" class="{% if view == 'list' %}on{% endif %}">List</a>
+    <a href="/calendar" class="{% if view == 'calendar' %}on{% endif %}">Calendar</a>
+    <a href="/print">Printable</a>
+    <a href="/events.ics">iCal</a>
+    <a href="/dashboard" class="gov-link">Editor sign-in</a>
+  </nav>
+</header>
+{% endif %}
+<main>
+{% block content %}{% endblock %}
+</main>
+{% if not embed %}
+<footer class="site-foot">
+  <span class="legend">
+  {% for t in SHOW_TYPES %}<span class="chip" style="background:{{ TYPE_COLORS[t] }}"></span>{{ t }}&nbsp;&nbsp;{% endfor %}
+  </span>
+</footer>
+{% endif %}
+<script>
+/* Report height to the parent page so an iframe embed never double-scrolls. */
+(function () {
+  function report() {
+    parent.postMessage({ essftaSpecialtyHeight: document.documentElement.scrollHeight }, "*");
+  }
+  if (window.parent !== window) {
+    new ResizeObserver(report).observe(document.body);
+    window.addEventListener("load", report);
+  }
+})();
+</script>
+</body>
+</html>

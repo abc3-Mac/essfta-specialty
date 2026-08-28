@@ -1,0 +1,22 @@
+services:
+  specialty:
+    build: .
+    image: essfta-specialty:1.0.0
+    container_name: essfta-specialty
+    restart: unless-stopped
+    environment:
+      SPECIALTY_SECRET_KEY: "${SPECIALTY_SECRET_KEY}"
+      SPECIALTY_DB: /data/specialty.db
+    volumes:
+      - specialty_data:/data
+    networks:
+      - npm_npm_network
+    ports:
+      - "8792:8792"   # direct access over Tailscale for testing before NPM route
+
+volumes:
+  specialty_data:
+
+networks:
+  npm_npm_network:
+    external: true

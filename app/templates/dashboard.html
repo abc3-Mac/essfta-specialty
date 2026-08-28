@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — ESSFTA Specialty Shows{% endblock %}
+{% block bodyclass %} tools{% endblock %}
+{% block content %}
+<div class="dash-head">
+  <h2>All specialty shows</h2>
+  <span class="who">signed in as {{ user.display_name }} ({{ user.role }})</span>
+  <form method="post" action="/logout"><button class="btn small ghost">Sign out</button></form>
+</div>
+
+<div class="tool-cards">
+  <a class="tool-card" href="/events/new">
+    <h3>+ Add a show</h3><p>One show at a time — club and dates now, judges and closing date later.</p>
+  </a>
+  <a class="tool-card" href="/excel">
+    <h3>Spreadsheet (Excel)</h3><p>Upload the master calendar workbook or our template, download and edit the current calendar, or draft next year.</p>
+  </a>
+  <a class="tool-card" href="/bulk">
+    <h3>Bulk hide / unhide</h3><p>Take a whole date range off the public views (or put it back). Preview first, undo after.</p>
+  </a>
+  <a class="tool-card" href="/rollforward">
+    <h3>Roll a year forward</h3><p>Copy a year's shows to the next year — same weekends, same weekdays.</p>
+  </a>
+  {% if user.role == 'admin' %}
+  <a class="tool-card" href="/users">
+    <h3>Manage editors</h3><p>Accounts, passwords, last sign-in per editor.</p>
+  </a>
+  <a class="tool-card" href="/audit">
+    <h3>Audit log</h3><p>Who signed in (or tried to), and who changed what.</p>
+  </a>
+  {% endif %}
+  <a class="tool-card" href="/help">
+    <h3>Help</h3><p>Plain-English guide to every button here.</p>
+  </a>
+</div>
+
+{% if user.role == 'admin' %}
+<form class="filters" method="post" action="/settings">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <strong style="font-size:13px">Public site:</strong>
+  <label><input type="checkbox" name="public_past" value="1" {% if public_past %}checked{% endif %}>
+    let the public tick "include past shows"</label>
+  <button class="btn small">Save</button>
+  <small>Unticked = visitors see upcoming shows only, everywhere (list, calendar,
+  printable, iCal). Signed-in editors and admins always see everything.</small>
+</form>
+
+<form class="filters" method="post" action="/settings/colors">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <strong style="font-size:13px">Show-type colors:</strong>
+  {% for t in SHOW_TYPES %}
+  <label style="display:inline-flex;align-items:center;gap:4px">{{ t }}
+    <input type="color" name="color_{{ loop.index0 }}" value="{{ TYPE_COLORS[t] }}"
+           style="width:34px;height:24px;padding:1px;border:1px solid var(--line);border-radius:4px;background:#fff">
+  </label>
+  {% endfor %}
+  <button class="btn small" name="do" value="save">Save colors</button>
+  <button class="btn small ghost" name="do" value="default"
+          onclick="return confirm('Return all show types to the default colors?');">Default colors</button>
+  <small>Click a swatch to pick a new color. Changes show everywhere at once — calendar,
+  legends, badges. Dark colors read best behind white text.</small>
+</form>
+{% endif %}
+
+<form id="bulkbar" method="post" action="/bulk/selected"
+      onsubmit="return confirm('Apply this to every ticked show?');">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+</form>
+<div class="bulkbar-ui">
+  <strong>Ticked shows:</strong>
+  <select name="action" form="bulkbar" id="bulk-action">
+    <option value="hide">Hide from public views</option>
+    <option value="unhide">Unhide</option>
+    <option value="cancel">Cancel</option>
+    <option value="reinstate">Reinstate</option>
+    {% if user.role == 'admin' %}
+    <option value="remove">Remove</option>
+    <option value="restore">Restore removed</option>
+    {% endif %}
+    <option value="shift">Shift dates by N days…</option>
+  </select>
+  <label id="days-wrap" style="display:none">by
+    <input type="number" name="days" form="bulkbar" min="-370" max="370" step="1" value="7" style="width:70px"> days
+    <small>(7 = one week later, −7 = one week earlier)</small>
+  </label>
+  <button class="btn small" form="bulkbar">Apply</button>
+  <small>Tick boxes below; the box in a header row ticks a whole section. Every bulk action can be undone.</small>
+</div>
+
+{% macro event_table(evs) %}
+<table class="events">
+  <tr><th><input type="checkbox" class="tickall" title="tick all"></th>
+      <th>Date</th><th>Host Club / Show</th><th>Type</th><th>City</th><th>State</th><th>Status</th><th></th></tr>
+  {% for ev in evs %}
+  <tr class="ev {% if ev.status == 'canceled' %}canceled{% endif %}"
+      style="border-left-color: {{ TYPE_COLORS.get(ev.show_type, '#9aa3ad') }}">
+    <td><input type="checkbox" form="bulkbar" name="ids" value="{{ ev.id }}"></td>
+    <td>{{ fmt_dates(ev.start_date, ev.end_date) }} <span style="color:#889">{{ ev.start_date[:4] }}</span></td>
+    <td><span class="title">{{ ev.club or ev.title }}</span>
+        <div class="meta">{% if ev.judge_regular %}Judge: {{ ev.judge_regular }}{% endif %}{% if ev.judge_sweeps %} · Sweeps: {{ ev.judge_sweeps }}{% endif %}</div></td>
+    <td><small>{{ ev.show_type }}</small></td>
+    <td>{{ ev.city }}</td>
+    <td>{{ ev.state }}</td>
+    <td>{{ ev.status }}{% if ev.hidden %}
+        <span style="background:#555;color:#fff;border-radius:4px;padding:1px 6px;font-size:11px;white-space:nowrap">hidden</span>{% endif %}</td>
+    <td class="actions">
+      <a class="btn small ghost" href="/events/{{ ev.id }}/edit">Edit</a>
+      {% if ev.status == 'scheduled' %}
+      <form method="post" action="/events/{{ ev.id }}/status"
+            onsubmit="return confirm('Cancel this show? It stays listed, marked CANCELED.');">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <input type="hidden" name="status" value="canceled">
+        <button class="btn small warn">Cancel</button>
+      </form>
+      {% else %}
+      <form method="post" action="/events/{{ ev.id }}/status">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <input type="hidden" name="status" value="scheduled">
+        <button class="btn small ghost">{% if ev.status == 'archived' %}Restore{% else %}Reinstate{% endif %}</button>
+      </form>
+      {% endif %}
+      {% if ev.status != 'archived' %}
+      {% if ev.hidden %}
+      <form method="post" action="/events/{{ ev.id }}/hidden">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <input type="hidden" name="hidden" value="0">
+        <button class="btn small ghost">Unhide</button>
+      </form>
+      {% else %}
+      <form method="post" action="/events/{{ ev.id }}/hidden"
+            onsubmit="return confirm('Hide this show from the public views? It stays right here on your dashboard, marked hidden, and one click unhides it.');">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <input type="hidden" name="hidden" value="1">
+        <button class="btn small ghost">Hide</button>
+      </form>
+      {% endif %}
+      {% if user.role == 'admin' %}
+      <form method="post" action="/events/{{ ev.id }}/status"
+            onsubmit="return confirm('Remove this show? It moves to the removed list below, where it can be restored.');">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <input type="hidden" name="status" value="archived">
+        <button class="btn small warn">Remove</button>
+      </form>
+      {% endif %}
+      <form method="post" action="/events/{{ ev.id }}/copyforward"
+            onsubmit="return confirm('Copy this show to {{ (ev.start_date[:4] | int) + 1 }} on the same weekend? You can adjust it right after.');">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <button class="btn small ghost" title="Copy to next year, same weekend and weekday">Copy → {{ (ev.start_date[:4] | int) + 1 }}</button>
+      </form>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endmacro %}
+
+<h3>Upcoming ({{ upcoming | length }})</h3>
+<div class="panel">
+{% if upcoming %}{{ event_table(upcoming) }}{% else %}<p>No upcoming shows — add one.</p>{% endif %}
+</div>
+
+<details class="past-block">
+  <summary>Past shows ({{ past | length }})</summary>
+  <div class="panel">{{ event_table(past) }}</div>
+</details>
+
+{% if hidden %}
+<details class="past-block">
+  <summary>Hidden from the public views ({{ hidden | length }}) — also listed in place above, marked <em>hidden</em></summary>
+  <div class="panel">{{ event_table(hidden) }}</div>
+</details>
+{% endif %}
+
+<details class="past-block">
+  <summary>Removed shows ({{ archived | length }}) — not shown to the public</summary>
+  <div class="panel">{{ event_table(archived) }}</div>
+</details>
+
+<script>
+document.getElementById("bulk-action").addEventListener("change", function () {
+  document.getElementById("days-wrap").style.display = this.value === "shift" ? "inline" : "none";
+});
+document.querySelectorAll("input.tickall").forEach(function (all) {
+  all.addEventListener("change", function () {
+    all.closest("table").querySelectorAll('input[name="ids"]')
+       .forEach(function (cb) { cb.checked = all.checked; });
+  });
+});
+</script>
+{% endblock %}

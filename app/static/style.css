@@ -1,0 +1,175 @@
+:root {
+  /* matched to englishspringerspaniels.org (Avada): brand #681e12, body #141617 on #f2f3f5 */
+  --ink: #141617; --paper: #ffffff; --line: #d7dce3; --soft: #f2f3f5;
+  --green: #681e12; --accent: #681e12;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; color: var(--ink); background: var(--paper);
+  font: 15px/1.45 Raleway, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+main { max-width: 1000px; margin: 0 auto; padding: 12px 16px 32px; }
+a { color: var(--accent); }
+
+.site-head {
+  background: var(--green); color: #fff; padding: 10px 16px;
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 16px;
+}
+.site-head h1 { font-size: 19px; margin: 0; font-family: "PT Serif", Georgia, serif; }
+.site-head nav a { color: #e8d9d6; text-decoration: none; margin-right: 14px; }
+.site-head nav a.on { color: #fff; font-weight: 700; border-bottom: 2px solid #fff; }
+.site-head .gov-link { opacity: .8; }
+.site-foot { padding: 10px 16px 24px; color: #55606e; font-size: 13px; text-align: center; }
+
+.embed-bar {
+  display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+  font-size: 13px; padding: 6px 16px 0;
+}
+.embed-bar a { text-decoration: none; font-weight: 600; color: var(--accent); }
+.embed-bar a.on { color: var(--ink); border-bottom: 2px solid var(--green); }
+.embed-bar .legend { color: #55606e; font-size: 12px; margin-left: auto; }
+
+.chip { display: inline-block; width: 11px; height: 11px; border-radius: 2px; margin-right: 4px; vertical-align: baseline; }
+
+/* filter bar */
+form.filters {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  background: var(--soft); border: 1px solid var(--line); border-radius: 8px;
+  padding: 8px 10px; margin: 12px 0;
+}
+form.filters select, form.filters input[type=text] {
+  font: inherit; padding: 4px 6px; border: 1px solid var(--line); border-radius: 6px; background: #fff;
+}
+form.filters label { font-size: 13px; color: #444; }
+form.filters button { font: inherit; padding: 4px 12px; border-radius: 6px; border: 1px solid var(--green); background: var(--green); color: #fff; }
+
+/* list view */
+.month-band {
+  background: var(--green); color: #fff; text-align: center; font-weight: 800;
+  letter-spacing: .06em; padding: 5px 8px; border-radius: 4px; margin-top: 18px;
+}
+table.events { width: 100%; border-collapse: collapse; margin-top: 6px; }
+table.events th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #55606e; padding: 4px 8px; }
+table.events td { padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr.ev td:first-child { white-space: nowrap; font-weight: 600; }
+tr.ev { border-left: 6px solid transparent; }
+tr.ev .title { font-weight: 600; }
+tr.ev .meta { font-size: 12.5px; color: #55606e; }
+tr.canceled .title, tr.canceled td:first-child { text-decoration: line-through; }
+.badge { display: inline-block; font-size: 11px; font-weight: 700; border-radius: 4px; padding: 1px 6px; color: #fff; vertical-align: middle; }
+.badge.cancel { background: #a02020; }
+.badge.postponed { background: #b07a10; }
+.stakes { font-size: 12px; color: #33404f; }
+
+/* calendar view */
+.cal-nav { display: flex; align-items: center; gap: 12px; margin: 12px 0 6px; }
+.cal-nav h2 { margin: 0; font-size: 20px; }
+.cal-nav a { text-decoration: none; font-weight: 700; }
+table.cal { width: 100%; border-collapse: collapse; table-layout: fixed; }
+table.cal th { background: var(--soft); border: 1px solid var(--line); font-size: 12px; padding: 4px; }
+table.cal td { border: 1px solid var(--line); vertical-align: top; height: 84px; padding: 2px 3px; font-size: 12px; }
+table.cal td.other { background: #fafbfc; color: #aab2bd; }
+table.cal td.today { outline: 2px solid var(--accent); outline-offset: -2px; }
+.daynum { font-weight: 700; font-size: 11px; }
+.cal-ev {
+  display: block; color: #fff; border-radius: 3px; padding: 1px 4px; margin: 2px 0;
+  font-size: 11px; line-height: 1.25; text-decoration: none; overflow: hidden;
+}
+.cal-ev.canceled { text-decoration: line-through; opacity: .55; }
+
+/* region grid (interclub at-a-glance view) */
+.grid-scroll { overflow-x: auto; }
+table.regiongrid { width: 100%; min-width: 760px; border-collapse: collapse; table-layout: fixed; margin-top: 4px; }
+table.regiongrid th { color: #fff; font-size: 13px; padding: 6px 4px; border: 1px solid var(--line); }
+table.regiongrid th.datecol { background: var(--ink); width: 84px; }
+table.regiongrid td { border: 1px solid var(--line); vertical-align: top; padding: 3px; font-size: 12.5px; }
+table.regiongrid td.datecol { font-weight: 700; white-space: nowrap; background: var(--soft); }
+.gcell { display: block; text-decoration: none; color: var(--ink); border-left: 4px solid transparent;
+         padding: 3px 5px; margin: 2px 0; border-radius: 3px; background: var(--soft); }
+.gcell:hover { background: #e8ebef; }
+.gcell .gclub { font-weight: 600; display: block; }
+.gcell .gtype { display: block; font-size: 11px; color: #55606e; font-style: italic; }
+.gcell .gloc { display: block; font-size: 11.5px; color: #55606e; }
+.gcell.canceled .gclub { text-decoration: line-through; }
+.gcell.band { background: #efe6e4; border-left: 4px solid #681e12; font-weight: 600; }
+.bandrow td { background: #faf7f6; }
+
+/* event detail */
+.detail-card { max-width: 620px; border: 1px solid var(--line); border-radius: 8px; padding: 16px 22px; }
+.detail-card h2 { margin: 4px 0 2px; }
+.detail-card .meta { color: #55606e; margin: 0 0 8px; }
+table.detail th { text-align: left; padding: 5px 14px 5px 0; vertical-align: top; white-space: nowrap; font-size: 13px; color: #55606e; }
+table.detail td { padding: 5px 0; }
+
+/* auth + dashboard */
+.card { max-width: 420px; margin: 40px auto; border: 1px solid var(--line); border-radius: 10px; padding: 20px 24px; }
+.card h2 { margin-top: 0; }
+.card label { display: block; margin: 10px 0 4px; font-weight: 600; font-size: 14px; }
+.card input { width: 100%; font: inherit; padding: 7px 9px; border: 1px solid var(--line); border-radius: 6px; }
+.card button, .btn {
+  font: inherit; font-weight: 600; margin-top: 14px; padding: 7px 16px;
+  border-radius: 6px; border: 1px solid var(--green); background: var(--green); color: #fff; cursor: pointer;
+}
+.btn.small { padding: 3px 10px; font-size: 13px; margin: 0; }
+.btn.ghost { background: #fff; color: var(--green); }
+.btn.warn { background: #fff; border-color: #a02020; color: #a02020; }
+.error { background: #fbeaea; border: 1px solid #d9a0a0; color: #7a1a1a; border-radius: 6px; padding: 8px 10px; }
+
+.dash-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 14px 0; }
+.dash-head h2 { margin: 0; }
+.dash-head .who { color: #55606e; font-size: 13px; }
+details.past-block summary { cursor: pointer; font-weight: 700; margin: 18px 0 6px; }
+td.actions { white-space: nowrap; }
+td.actions form { display: inline; }
+
+/* event form */
+form.event-form { max-width: 660px; }
+form.event-form fieldset { border: 1px solid var(--line); border-radius: 8px; margin: 14px 0; padding: 10px 14px; }
+form.event-form legend { font-weight: 700; font-size: 14px; padding: 0 6px; }
+form.event-form label { display: block; margin: 8px 0 3px; font-weight: 600; font-size: 13.5px; }
+form.event-form input[type=text], form.event-form input[type=date], form.event-form input[type=url],
+form.event-form select, form.event-form textarea {
+  width: 100%; font: inherit; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px;
+}
+form.event-form .row { display: flex; gap: 12px; }
+form.event-form .row > div { flex: 1; }
+form.event-form .checks label { display: inline-block; font-weight: 400; margin-right: 16px; }
+
+/* ---- signed-in tool pages: paper background + white cards, borrowed from the
+   Liturgical Calendar app's Almanac hub. Public/embed views keep the WP-matched look. ---- */
+body.tools { background: #f6f4ef; }
+body.tools main { max-width: 1100px; }
+.tool-cards {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 12px; margin: 14px 0 20px;
+}
+.tool-card {
+  display: block; background: #fff; border: 1px solid #ddd8ce; border-radius: 8px;
+  padding: 12px 14px; text-decoration: none; color: var(--ink);
+  box-shadow: 0 1px 4px rgba(0,0,0,.08); transition: box-shadow .15s, transform .15s;
+}
+.tool-card:hover { box-shadow: 0 3px 10px rgba(0,0,0,.14); transform: translateY(-1px); }
+.tool-card h3 { margin: 0 0 4px; font-size: 15px; color: var(--green); font-family: "PT Serif", Georgia, serif; }
+.tool-card p { margin: 0; font-size: 12.5px; color: #55606e; line-height: 1.35; }
+.panel {
+  background: #fff; border: 1px solid #ddd8ce; border-radius: 8px;
+  padding: 10px 14px; margin: 6px 0 14px; box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+body.tools table.events { background: #fff; }
+.bulkbar-ui {
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  background: #fff; border: 1px solid #ddd8ce; border-radius: 8px;
+  padding: 8px 12px; margin: 0 0 10px; box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  position: sticky; top: 0; z-index: 5; font-size: 13.5px;
+}
+.bulkbar-ui select, .bulkbar-ui input { font: inherit; padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; }
+.bulkbar-ui small { color: #55606e; }
+
+@media (max-width: 640px) {
+  table.events .hide-sm { display: none; }
+  form.event-form .row { display: block; }
+  table.cal td { height: 56px; }
+}
+@media print {
+  .site-head, .site-foot, form.filters, .noprint { display: none !important; }
+}

@@ -1,0 +1,7 @@
+data/
+backups/
+archive/
+.venv/
+__pycache__/
+*.pyc
+seed/import-report.txt

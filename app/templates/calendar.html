@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<form class="filters" method="get">
+  <input type="hidden" name="month" value="{{ ym }}">
+  {% if embed %}<input type="hidden" name="embed" value="1">{% endif %}
+  <label>Show type
+    <select name="type">
+      <option value="">All</option>
+      {% for t in SHOW_TYPES %}<option value="{{ t }}" {% if filters.show_type == t %}selected{% endif %}>{{ t }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>State
+    <select name="state">
+      <option value="">All</option>
+      {% for s in states %}<option value="{{ s }}" {% if filters.state == s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+    </select>
+  </label>
+  <label><input type="checkbox" name="hide_canceled" value="1" {% if not filters.include_canceled %}checked{% endif %}> hide canceled</label>
+  <button>Apply</button>
+</form>
+
+<div class="cal-nav">
+  {% if allow_prev %}<a href="?month={{ prev_m }}{% if embed %}&embed=1{% endif %}">&larr; prev</a>{% endif %}
+  <h2>{{ month_label }}</h2>
+  <a href="?month={{ next_m }}{% if embed %}&embed=1{% endif %}">next &rarr;</a>
+</div>
+
+<table class="cal">
+  <tr>{% for d in ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"] %}<th>{{ d }}</th>{% endfor %}</tr>
+  {% for week in weeks %}
+  <tr>
+    {% for day in week %}
+    {% set iso = day.isoformat() %}
+    <td class="{% if day.month != this_month %}other{% endif %} {% if iso == today %}today{% endif %}">
+      <span class="daynum">{{ day.day }}</span>
+      {% for ev in by_day.get(iso, []) %}
+      <span class="cal-ev {% if ev.status == 'canceled' %}canceled{% endif %}"
+            style="background: {{ TYPE_COLORS.get(ev.show_type, '#9aa3ad') }}"
+            title="{{ ev.club or ev.title }} — {{ ev.show_type }}{% if ev.city %}, {{ ev.city }} {{ ev.state }}{% endif %}">
+        {{ ev.club or ev.title }}</span>
+      {% endfor %}
+    </td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

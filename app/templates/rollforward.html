@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Roll a year forward — ESSFTA Specialty Shows{% endblock %}
+{% block bodyclass %} tools{% endblock %}
+{% block content %}
+<div class="dash-head">
+  <h2>Roll a year forward</h2>
+  <a class="btn small ghost" href="/dashboard">&larr; dashboard</a>
+</div>
+
+{% if message %}
+<div class="error" style="background:#eef7ee;border-color:#7fb87f;color:#1e4d1e">{{ message }}</div>
+{% endif %}
+{% if error %}<div class="error">{{ error }}</div>{% endif %}
+
+{% if stage == 'form' %}
+<p>Copy a whole year's shows to the next year in one step. Dates shift to the
+<strong>same weekend and day of the week</strong> (a Saturday–Sunday cluster stays a
+Saturday–Sunday cluster). Host club, show type, location, and superintendent carry over;
+<strong>judges, closing dates, links and notes do not</strong> — those change every year,
+so the new shows start blank and each one can be opened to fill them in or adjust its date.
+You will see every proposed show before anything is created, and a mistaken run can be
+undone as a batch.</p>
+
+<form class="event-form" method="post" action="/rollforward/preview">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <fieldset>
+    <div class="row">
+      <div><label>Copy the shows of</label>
+        <select name="source_year">
+          {% for y in years %}<option {% if y == source_year %}selected{% endif %}>{{ y }}</option>{% endfor %}
+        </select>
+      </div>
+      <div><label>into</label>
+        <select name="target_year">
+          {% for y in range(source_year, source_year + 3) %}<option {% if y == target_year %}selected{% endif %}>{{ y }}</option>{% endfor %}
+        </select>
+      </div>
+    </div>
+    <button class="btn">Preview — show me the proposed shows</button>
+  </fieldset>
+</form>
+{% endif %}
+
+{% if stage == 'preview' %}
+<h3>Preview: {{ source_year }} → {{ target_year }}</h3>
+<p>{{ creatable }} show{{ 's' if creatable != 1 }} would be created. Untick any you don't want.
+Nothing has been created yet.</p>
+<form method="post" action="/rollforward/apply">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <input type="hidden" name="source_year" value="{{ source_year }}">
+  <input type="hidden" name="target_year" value="{{ target_year }}">
+  <table class="events">
+    <tr><th></th><th>Host Club / Show</th><th>Type</th><th>{{ source_year }} dates</th><th>Proposed {{ target_year }} dates</th><th>Days</th><th></th></tr>
+    {% for r in plan %}
+    <tr style="border-left-color: {{ TYPE_COLORS.get(r.ev.show_type, '#9aa3ad') }}"
+        {% if r.disposition != 'create' %}class="canceled"{% endif %}>
+      <td>{% if r.disposition == 'create' %}
+          <input type="checkbox" name="include" value="{{ r.ev.id }}" checked>
+          {% endif %}</td>
+      <td>{{ r.ev.club or r.ev.title }}</td>
+      <td><small>{{ r.ev.show_type }}</small></td>
+      <td>{{ fmt_dates(r.ev.start_date, r.ev.end_date) }}</td>
+      <td>{% if r.disposition == 'create' %}<strong>{{ fmt_dates(r.new_start, r.new_end) }}</strong>{% else %}—{% endif %}</td>
+      <td>{% if r.disposition == 'create' %}{{ fmt_days(r.new_start, r.new_end) }}{% endif %}</td>
+      <td><small>{% if r.disposition == 'dup' %}skipped — <a href="/event/{{ r.dup_of.id }}">already on the calendar</a> ({{ r.dup_of.start_date }})
+          {% elif r.disposition == 'canceled' %}skipped — was canceled in {{ source_year }}; add it by hand if it's back on
+          {% endif %}</small></td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% if creatable %}
+  <div style="margin-top:12px">
+    <button class="btn warn">Create the ticked shows for {{ target_year }}</button>
+    <a class="btn ghost" href="/rollforward">No, go back</a>
+  </div>
+  {% else %}
+  <p>Nothing to create — every show is already on the {{ target_year }} calendar or was canceled.</p>
+  {% endif %}
+</form>
+{% endif %}
+
+{% if stage == 'result' %}
+<p>Each new show carries the club, type, location and superintendent — open it to fill in
+judges and the closing date, or to nudge its date.</p>
+<table class="events">
+  <tr><th>Proposed dates</th><th>Days</th><th>Host Club / Show</th><th></th></tr>
+  {% for ev in created %}
+  <tr style="border-left-color: {{ TYPE_COLORS.get(ev.show_type, '#9aa3ad') }}">
+    <td>{{ fmt_dates(ev.start_date, ev.end_date) }} {{ target_year }}</td>
+    <td>{{ fmt_days(ev.start_date, ev.end_date) }}</td>
+    <td>{{ ev.club or ev.title }}</td>
+    <td><a class="btn small ghost" href="/events/{{ ev.id }}/edit">Open &amp; adjust</a></td>
+  </tr>
+  {% endfor %}
+</table>
+<form method="post" action="/bulk/undo" style="margin-top:12px"
+      onsubmit="return confirm('Undo this roll-forward? All {{ created | length }} shows it created will be removed from the calendar.');">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <input type="hidden" name="batch_id" value="{{ batch_id }}">
+  <button class="btn warn">Undo — this was a mistake</button>
+  <a class="btn ghost" href="/dashboard">Back to dashboard</a>
+</form>
+{% endif %}
+{% endblock %}

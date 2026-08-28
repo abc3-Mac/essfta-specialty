@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ESSFTA Specialty Shows {{ year }}</title>
+<style>
+  body { font: 13px/1.4 Helvetica, Arial, sans-serif; color: #111; margin: 24px; }
+  h1 { text-align: center; font-size: 20px; margin: 0 0 14px; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-size: 11px; text-transform: uppercase; padding: 3px 6px; border-bottom: 2px solid #681e12; }
+  td { padding: 4px 6px; border-bottom: 1px solid #ccc; }
+  tr.band td { background: #681e12; color: #fff; text-align: center; font-weight: 800; letter-spacing: .08em; }
+  tr.ev td:first-child { white-space: nowrap; font-weight: 600; }
+  tr.canceled { text-decoration: line-through; color: #888; }
+  @media print { @page { margin: 14mm; } }
+</style>
+</head>
+<body>
+<h1>ESS Specialty &amp; Supported Entry Calendar — {{ year }}</h1>
+<table>
+  <tr><th>Date</th><th>Day(s)</th><th>Show Type</th><th>Host Club</th><th>Location</th><th>Closes</th><th>Superintendent</th><th>Judge</th><th>Sweeps / Futurity</th></tr>
+  {% for key, evs in months.items() %}
+  <tr class="band"><td colspan="9">{{ month_name(key) }}</td></tr>
+  {% for ev in evs %}
+  <tr class="ev {% if ev.status == 'canceled' %}canceled{% endif %}">
+    <td>{{ fmt_dates(ev.start_date, ev.end_date) }}</td>
+    <td>{{ fmt_days(ev.start_date, ev.end_date) }}</td>
+    <td>{{ ev.show_type }}</td>
+    <td>{{ ev.club or ev.title }}{% if ev.status == 'canceled' %} (CANCELED){% endif %}</td>
+    <td>{{ ev.city }}{% if ev.city and ev.state %}, {% endif %}{{ ev.state }}</td>
+    <td>{{ fmt_closing(ev.closing_date) }}</td>
+    <td>{{ ev.superintendent }}</td>
+    <td>{{ ev.judge_regular }}</td>
+    <td>{{ ev.judge_sweeps }}</td>
+  </tr>
+  {% endfor %}
+  {% endfor %}
+</table>
+<script>window.print && setTimeout(() => window.print(), 400);</script>
+</body>
+</html>

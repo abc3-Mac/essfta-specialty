@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}Bulk hide / unhide — ESSFTA Specialty Shows{% endblock %}
+{% block bodyclass %} tools{% endblock %}
+{% block content %}
+<div class="dash-head">
+  <h2>Bulk hide / unhide</h2>
+  <a class="btn small ghost" href="/dashboard">&larr; dashboard</a>
+</div>
+
+{% if message %}
+<div class="error" style="background:#eef7ee;border-color:#7fb87f;color:#1e4d1e">{{ message }}</div>
+{% endif %}
+{% if error %}<div class="error">{{ error }}</div>{% endif %}
+
+{% if stage == 'form' %}
+<p>Hide takes shows off the <strong>public</strong> list, calendar, printable page and
+iCal feed — they stay on your dashboard marked <em>hidden</em>, unchanged, and can be unhidden
+any time. (Past shows already drop off the public views by themselves the day after they end,
+so unlike the old spreadsheet there is no need to hide rows month by month.) Nothing is
+deleted. You will see the full list of matching shows before anything changes, and every bulk
+run can be undone afterward with one click.{% if user.role == 'admin' %}
+Admins can also bulk-<strong>Remove</strong> (the stronger form: shows move to the removed
+list at the bottom of the dashboard) and bulk-restore removed shows.{% endif %}</p>
+
+<form class="event-form" method="post" action="/bulk/preview">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <fieldset>
+    <div class="row">
+      <div><label>Action</label>
+        <select name="action">
+          <option value="hide">Hide from public views</option>
+          <option value="unhide">Unhide (put back on public views)</option>
+          {% if user.role == 'admin' %}
+          <option value="remove">Remove (admin — move to the removed list)</option>
+          <option value="restore">Restore removed shows (admin)</option>
+          {% endif %}
+        </select>
+      </div>
+      <div><label>Shows starting from</label><input type="date" name="date_from" value="{{ today[:4] }}-01-01" required></div>
+      <div><label>through</label><input type="date" name="date_to" value="{{ today }}" required></div>
+    </div>
+    <button class="btn">Preview — show me what matches</button>
+  </fieldset>
+</form>
+{% endif %}
+
+{% if stage == 'preview' %}
+<h3>Preview: {{ action_label | lower }} — {{ events | length }} show{{ 's' if events | length != 1 }}</h3>
+<p>Starting {{ date_from }} through {{ date_to }}. Nothing has changed yet.</p>
+{% if events %}
+<table class="events">
+  <tr><th>Date</th><th>Host Club / Show</th><th>Type</th><th>City</th><th>State</th><th>Status</th></tr>
+  {% for ev in events %}
+  <tr style="border-left-color: {{ TYPE_COLORS.get(ev.show_type, '#9aa3ad') }}">
+    <td>{{ fmt_dates(ev.start_date, ev.end_date) }} <span style="color:#889">{{ ev.start_date[:4] }}</span></td>
+    <td>{{ ev.club or ev.title }}</td>
+    <td><small>{{ ev.show_type }}</small></td>
+    <td>{{ ev.city }}</td>
+    <td>{{ ev.state }}</td>
+    <td>{{ ev.status }}</td>
+  </tr>
+  {% endfor %}
+</table>
+<form method="post" action="/bulk/apply" style="margin-top:12px">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <input type="hidden" name="action" value="{{ action }}">
+  <input type="hidden" name="date_from" value="{{ date_from }}">
+  <input type="hidden" name="date_to" value="{{ date_to }}">
+  <button class="btn warn">Yes — {{ action_label | lower }}: all {{ events | length }} show{{ 's' if events | length != 1 }}</button>
+  <a class="btn ghost" href="/bulk">No, go back</a>
+</form>
+{% else %}
+<p>No shows match — nothing to do. <a href="/bulk">Change the dates</a>.</p>
+{% endif %}
+{% endif %}
+
+{% if stage == 'result' %}
+<table class="events">
+  <tr><th>Date</th><th>Host Club / Show</th><th>Type</th><th>Status</th></tr>
+  {% for ev in events %}
+  <tr style="border-left-color: {{ TYPE_COLORS.get(ev.show_type, '#9aa3ad') }}">
+    <td>{{ fmt_dates(ev.start_date, ev.end_date) }} <span style="color:#889">{{ ev.start_date[:4] }}</span></td>
+    <td>{{ ev.club or ev.title }}</td>
+    <td><small>{{ ev.show_type }}</small></td>
+    <td>{{ ev.status }}</td>
+  </tr>
+  {% endfor %}
+</table>
+<form method="post" action="/bulk/undo" style="margin-top:12px"
+      onsubmit="return confirm('Undo batch {{ batch_id }}? Every show it touched goes back to how it was.');">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <input type="hidden" name="batch_id" value="{{ batch_id }}">
+  <button class="btn warn">Undo this</button>
+  <a class="btn ghost" href="/dashboard">Back to dashboard</a>
+</form>
+{% endif %}
+
+{% if stage == 'form' and batches %}
+<h3 style="margin-top:28px">Recent bulk runs{% if user.role == 'admin' %} (all accounts){% endif %}</h3>
+<table class="events">
+  <tr><th>When (UTC)</th><th>Who</th><th>What</th><th>Shows</th><th></th></tr>
+  {% for b in batches %}
+  <tr>
+    <td>{{ b.created_at }}</td>
+    <td><code>{{ b.created_by }}</code></td>
+    <td>{{ b.description }}</td>
+    <td>{{ b.event_count }}</td>
+    <td class="actions">
+      {% if b.undone_at %}<small>undone {{ b.undone_at }}</small>
+      {% elif user.role == 'admin' or b.created_by == user.username %}
+      <form method="post" action="/bulk/undo"
+            onsubmit="return confirm('Undo batch {{ b.id }} ({{ b.description }})? Every show it touched goes back to how it was.');">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <input type="hidden" name="batch_id" value="{{ b.id }}">
+        <button class="btn small warn">Undo</button>
+      </form>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+{% endblock %}

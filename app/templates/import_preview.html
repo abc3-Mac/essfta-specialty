@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Confirm spreadsheet changes — ESSFTA Specialty Shows{% endblock %}
+{% block bodyclass %} tools{% endblock %}
+{% block content %}
+<h2>Confirm spreadsheet changes</h2>
+<p>Nothing has been saved yet — this is what your file would change.</p>
+
+{% if errors %}
+<div class="error" style="margin-bottom:10px">
+  <ul style="margin:4px 0 4px 18px">{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
+</div>
+{% endif %}
+
+{% if updates %}
+<div class="panel">
+<h3 style="margin-top:0">{{ updates | length }} show{{ 's' if updates | length != 1 }} will be updated</h3>
+<table class="events">
+  <tr><th>Show</th><th>Change</th></tr>
+  {% for u in updates %}
+  <tr class="ev">
+    <td>{{ u.label }} <small style="color:#889">#{{ u.id }}</small></td>
+    <td>{% for f, new in u.changes.items() %}
+        <div><small>{{ labels.get(f, f) }}: <s style="color:#a05050">{{ u.old[f] if u.old[f] not in (None, '') else '—' }}</s>
+        → <strong>{{ new if new not in (None, '') else '—' }}</strong></small></div>
+        {% endfor %}</td>
+  </tr>
+  {% endfor %}
+</table>
+</div>
+{% endif %}
+
+{% if creates %}
+<div class="panel">
+<h3 style="margin-top:0">New rows (no EVENT ID)</h3>
+<table class="events">
+  <tr><th>Date</th><th>Type</th><th>Host club</th><th>State</th><th>What the parser noted</th><th></th></tr>
+  {% for c in creates %}
+  <tr class="ev">
+    <td>{{ fmt_dates(c.row.start_date, c.row.end_date) }} {{ c.row.start_date[:4] }}</td>
+    <td><small>{{ c.row.show_type }}</small></td>
+    <td>{{ c.row.club }}</td>
+    <td>{{ c.row.state }}</td>
+    <td>{% for n in c.notes %}<div><small style="color:#a06020">{{ n }}</small></div>{% endfor %}</td>
+    <td><small>{% if c.dup %}will be skipped — already on the calendar{% else %}will be added{% endif %}</small></td>
+  </tr>
+  {% endfor %}
+</table>
+</div>
+{% endif %}
+
+{% if unchanged %}<p>{{ unchanged }} row{{ 's' if unchanged != 1 }} matched the calendar exactly — nothing to do there.</p>{% endif %}
+
+{% if updates or creates %}
+<form method="post" action="/import/apply">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <input type="hidden" name="pending" value="{{ token }}">
+  <button class="btn warn">Save these changes</button>
+  <a class="btn ghost" href="/excel">Cancel</a>
+</form>
+<p><small>After saving you'll get an <strong>Undo</strong> button in case the file was wrong.</small></p>
+{% else %}
+<p>Nothing to change. <a href="/excel">Back to spreadsheet tools</a>.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Editor accounts — ESSFTA Specialty Shows{% endblock %}
+{% block bodyclass %} tools{% endblock %}
+{% block content %}
+<div class="dash-head">
+  <h2>Editor accounts</h2>
+  <a class="btn small ghost" href="/dashboard">&larr; dashboard</a>
+  <a class="btn small ghost" href="/audit">Audit log</a>
+</div>
+
+{% if new_password %}
+<div class="error" style="background:#eef7ee;border-color:#7fb87f;color:#1e4d1e">
+  Password for <strong>{{ pw_for }}</strong>: <code style="font-size:16px">{{ new_password }}</code>
+  — copy it now; it is shown only this once.
+</div>
+{% endif %}
+
+<table class="events">
+  <tr><th>Username</th><th>Name</th><th>Role</th><th>Status</th><th>Last signed in (UTC)</th><th></th></tr>
+  {% for u in users %}
+  <tr>
+    <td><code>{{ u.username }}</code></td>
+    <td>{{ u.display_name }}</td>
+    <td>{{ u.role }}</td>
+    <td>{% if u.active %}active{% else %}<strong style="color:#a02020">deactivated</strong>{% endif %}</td>
+    <td>{% if last_seen.get(u.username) %}{{ last_seen[u.username] }}{% else %}<span style="color:#a06020">never</span>{% endif %}</td>
+    <td class="actions">
+      <form method="post" action="/users/{{ u.username }}/resetpw">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <button class="btn small ghost">Reset password</button>
+      </form>
+      {% if u.username != user.username %}
+      {% if u.active %}
+      <form method="post" action="/users/{{ u.username }}/active"
+            onsubmit="return confirm('Deactivate {{ u.username }}? They can no longer sign in; their shows remain.');">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <input type="hidden" name="active" value="0">
+        <button class="btn small warn">Deactivate</button>
+      </form>
+      {% else %}
+      <form method="post" action="/users/{{ u.username }}/active">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <input type="hidden" name="active" value="1">
+        <button class="btn small ghost">Reactivate</button>
+      </form>
+      {% endif %}
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+<p><small>The full sign-in history is on the <a href="/audit">audit log</a>.</small></p>
+
+<h3>Add a new editor</h3>
+<form class="event-form" method="post" action="/users/new">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <fieldset>
+    <div class="row">
+      <div><label>Username (letters/numbers)</label><input type="text" name="username" required></div>
+      <div><label>Display name</label><input type="text" name="display_name" required></div>
+      <div><label>Role</label>
+        <select name="role"><option value="editor">editor</option><option value="admin">admin</option></select>
+      </div>
+    </div>
+    <button class="btn">Create account</button>
+    <p><small>The password is generated automatically and shown once — hand it to the new editor.
+    Editors can add and edit every show; admins can also remove shows, manage accounts, and change settings.</small></p>
+  </fieldset>
+</form>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Spreadsheet import — ESSFTA Specialty Shows{% endblock %}
+{% block content %}
+<h2>Spreadsheet import</h2>
+<p><a href="/dashboard">&larr; back to dashboard</a> · <a href="/excel">spreadsheet tools</a></p>
+
+{% if updated %}
+<h3>Updated {{ updated | length }} show{{ 's' if updated | length != 1 }}</h3>
+<table class="events">
+  <tr><th>Show</th><th>What changed</th><th></th></tr>
+  {% for u in updated %}
+  <tr class="ev">
+    <td>{{ u.label }}</td>
+    <td><small>{% for f, v in u.changes.items() %}{{ f | replace("_", " ") }} → {{ v }}{% if not loop.last %}; {% endif %}{% endfor %}</small></td>
+    <td><a class="btn small ghost" href="/events/{{ u.id }}/edit">Open</a></td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+{% if batch_id %}
+<form method="post" action="/bulk/undo" style="margin:10px 0"
+      onsubmit="return confirm('Undo this upload? Every show it changed or added goes back to how it was.');">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <input type="hidden" name="batch_id" value="{{ batch_id }}">
+  <button class="btn small warn">Undo this upload</button>
+</form>
+{% endif %}
+
+{% if created %}
+<h3>Added {{ created | length }} show{{ 's' if created | length != 1 }}</h3>
+<table class="events">
+  <tr><th>Date</th><th>Type</th><th>Host club</th><th>State</th><th></th></tr>
+  {% for ev in created %}
+  <tr class="ev">
+    <td>{{ fmt_dates(ev.start_date, ev.end_date) }} {{ ev.start_date[:4] }}</td>
+    <td><small>{{ ev.show_type }}</small></td>
+    <td>{{ ev.club }}</td>
+    <td>{{ ev.state }}</td>
+    <td><a class="btn small ghost" href="/events/{{ ev.id }}/edit">Add details</a></td>
+  </tr>
+  {% endfor %}
+</table>
+<p><small>Click <strong>Add details</strong> on any row to fill in judges, closing date, or links.</small></p>
+{% elif not updated %}
+<p>No shows were added or changed.</p>
+{% endif %}
+
+{% if skipped %}
+<h3>Skipped {{ skipped | length }} (already on the calendar)</h3>
+<ul>{% for s in skipped %}<li>{{ s }}</li>{% endfor %}</ul>
+{% endif %}
+
+{% if errors %}
+<h3>Problems</h3>
+<ul>{% for e in errors %}<li class="error" style="margin:4px 0">{{ e }}</li>{% endfor %}</ul>
+{% endif %}
+{% endblock %}

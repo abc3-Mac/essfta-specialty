@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<form class="filters" method="get">
+  <label>Show type
+    <select name="type">
+      <option value="">All</option>
+      {% for t in SHOW_TYPES %}<option value="{{ t }}" {% if filters.show_type == t %}selected{% endif %}>{{ t }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>State
+    <select name="state">
+      <option value="">All</option>
+      {% for s in states %}<option value="{{ s }}" {% if filters.state == s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>Club <input type="text" name="club" size="14" value="{{ filters.club or '' }}"></label>
+  <label>Year
+    <select name="year">
+      {% for y in years or [2026, 2027] %}<option value="{{ y }}" {% if year == y|string %}selected{% endif %}>{{ y }}</option>{% endfor %}
+    </select>
+  </label>
+  {% if can_past %}<label><input type="checkbox" name="past" value="1" {% if show_past %}checked{% endif %}> include past</label>{% endif %}
+  <label><input type="checkbox" name="hide_canceled" value="1" {% if not filters.include_canceled %}checked{% endif %}> hide canceled</label>
+  {% if embed %}<input type="hidden" name="embed" value="1">{% endif %}
+  <button>Apply</button>
+</form>
+
+{% if not months %}<p>No shows match.</p>{% endif %}
+{% for key, evs in months.items() %}
+<div class="month-band">{{ month_name(key) }}</div>
+<table class="events">
+  <tr><th>Date</th><th class="hide-sm">Days</th><th>Host Club / Show</th><th>Type</th><th>City</th><th>State</th></tr>
+  {% for ev in evs %}
+  <tr class="ev {% if ev.status == 'canceled' %}canceled{% endif %}"
+      style="border-left-color: {{ TYPE_COLORS.get(ev.show_type, '#9aa3ad') }}">
+    <td>{{ fmt_dates(ev.start_date, ev.end_date) }}</td>
+    <td class="hide-sm">{{ fmt_days(ev.start_date, ev.end_date) }}</td>
+    <td>
+      <a class="title" style="color:inherit" href="/event/{{ ev.id }}{% if embed %}?embed=1{% endif %}">{{ ev.club or ev.title }}</a>
+      {% if ev.status == 'canceled' %}<span class="badge cancel">CANCELED</span>{% endif %}
+      {% if ev.status == 'postponed' %}<span class="badge postponed">POSTPONED</span>{% endif %}
+      <div class="meta">
+        {% if ev.closing_date %}closes {{ fmt_closing(ev.closing_date) }}{% endif %}
+        {% if ev.superintendent %} · {{ ev.superintendent }}{% endif %}
+        {% if ev.judge_regular %} · Judge: {{ ev.judge_regular }}{% endif %}
+        {% if ev.judge_sweeps %} · Sweeps: {{ ev.judge_sweeps }}{% endif %}
+        {% if ev.link_url %} · <a href="{{ ev.link_url }}" target="_blank" rel="noopener">entry info</a>{% endif %}
+      </div>
+    </td>
+    <td><span class="badge" style="background:{{ TYPE_COLORS.get(ev.show_type, '#9aa3ad') }};color:#fff">{{ ev.show_type }}</span></td>
+    <td>{{ ev.city }}</td>
+    <td>{{ ev.state }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endfor %}
+{% endblock %}
