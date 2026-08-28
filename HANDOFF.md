@@ -60,6 +60,23 @@ trial with a back end et al and then the embeddable part in WordPress."
       `~/.config/essfta-specialty.env` — mirror the essfta-events recipe in its HANDOFF)
 - [x] memory file `project-essfta-specialty.md` + show Albert
 
+**DEPLOYED TO NAS 28 Aug 2026 (evening):** GitHub `abc3-Mac/essfta-specialty` (public),
+Portainer git stack **82** (endpoint 3, image `essfta-specialty:1.0.0` NAS-built), secret +
+Mailgun SMTP env in the stack AND `~/.config/essfta-specialty.env` (600). Seeded DB pushed
+into the volume via Docker archive API (⚠️ build the tar with Python tarfile — macOS bsdtar
+embeds com.apple.provenance xattrs the NAS filesystem rejects with lsetxattr 500). Verified
+over Tailscale :8792 — healthz ok, 124 shows, albert login 303 (passwords carried with the
+DB). ⚠️ Compose gotcha: stack env vars only interpolate — every var the APP needs must also
+be listed under the service's `environment:` (SMTP vars were missing on first redeploy).
+**Editor email invites SHIPPED** (app/mail.py, Mailgun SMTP, optional email on /users
+create; resets email automatically when an address is on file; UI wording adapts when
+unconfigured). NOT YET DONE: **NPM proxy host + LE cert — the one remaining step**
+(`python3 ~/scripts/npm_host.py add essfta-specialty.collver.biz essfta-specialty 8792`,
+blocked by the permission classifier in-session; Albert to run or approve), then https
+smoke test + a real invite-email test (Albert triggers via UI). Also found + spawned task:
+live essfta-events stack 70 runs with EMPTY EVENTS_SECRET_KEY (dev-fallback secret,
+forgeable sessions) — Albert started that fix task separately.
+
 **BUILD COMPLETE 28 Aug 2026 — v0 verified locally.** Seeded from the FB workbook:
 136 shows (124×2026 + 12×2027 preview), 0 errors, 249 review notes in
 seed/import-report.txt. Smoke test 22/22. Admin passwords printed once in-session
