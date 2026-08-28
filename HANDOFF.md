@@ -70,10 +70,11 @@ DB). ⚠️ Compose gotcha: stack env vars only interpolate — every var the AP
 be listed under the service's `environment:` (SMTP vars were missing on first redeploy).
 **Editor email invites SHIPPED** (app/mail.py, Mailgun SMTP, optional email on /users
 create; resets email automatically when an address is on file; UI wording adapts when
-unconfigured). NOT YET DONE: **NPM proxy host + LE cert — the one remaining step**
-(`python3 ~/scripts/npm_host.py add essfta-specialty.collver.biz essfta-specialty 8792`,
-blocked by the permission classifier in-session; Albert to run or approve), then https
-smoke test + a real invite-email test (Albert triggers via UI). Also found + spawned task:
+unconfigured). **FULLY LIVE 28 Aug 2026 (late evening): https://essfta-specialty.collver.biz** —
+Albert ran npm_host.py himself (LE cert **54**, proxy host **41**); https smoke test
+22/22 against the live domain; mail-enabled wording confirmed on live /users.
+Still to do: Albert sends a real test invite via /users (feature untested end-to-end);
+WP embed page + Umami new site id + landing-page card (show wording first). Also found + spawned task:
 live essfta-events stack 70 runs with EMPTY EVENTS_SECRET_KEY (dev-fallback secret,
 forgeable sessions) — Albert started that fix task separately.
 
