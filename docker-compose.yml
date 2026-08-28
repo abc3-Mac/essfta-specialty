@@ -7,6 +7,12 @@ services:
     environment:
       SPECIALTY_SECRET_KEY: "${SPECIALTY_SECRET_KEY}"
       SPECIALTY_DB: /data/specialty.db
+      SMTP_HOST: "${SMTP_HOST}"
+      SMTP_PORT: "${SMTP_PORT}"
+      SMTP_USER: "${SMTP_USER}"
+      SMTP_PASS: "${SMTP_PASS}"
+      MAIL_FROM: "${MAIL_FROM}"
+      SITE_URL: "${SITE_URL}"
     volumes:
       - specialty_data:/data
     networks:
