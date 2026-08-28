@@ -73,7 +73,10 @@ create; resets email automatically when an address is on file; UI wording adapts
 unconfigured). **FULLY LIVE 28 Aug 2026 (late evening): https://essfta-specialty.collver.biz** —
 Albert ran npm_host.py himself (LE cert **54**, proxy host **41**); https smoke test
 22/22 against the live domain; mail-enabled wording confirmed on live /users.
-Still to do: Albert sends a real test invite via /users (feature untested end-to-end);
+Show-type definitions shipped 28 Aug (TYPE_DEFS in app/db.py — collapsible key on
+list/calendar, badge/legend tooltips, detail-page line, print-page key; Patty may refine
+wording, one-line edits). Still to do: Albert sends a real test invite via /users
+(feature untested end-to-end);
 WP embed page + Umami new site id + landing-page card (show wording first). Also found + spawned task:
 live essfta-events stack 70 runs with EMPTY EVENTS_SECRET_KEY (dev-fallback secret,
 forgeable sessions) — Albert started that fix task separately.
