@@ -77,7 +77,10 @@ Show-type definitions shipped 28 Aug (TYPE_DEFS in app/db.py — collapsible key
 list/calendar, badge/legend tooltips, detail-page line, print-page key; Patty may refine
 wording, one-line edits). Still to do: Albert sends a real test invite via /users
 (feature untested end-to-end);
-WP embed page + Umami new site id + landing-page card (show wording first). Also found + spawned task:
+WP embed page + landing-page card (show wording first).
+**Umami LIVE 29 Aug: website-id `f97d156a-2913-46fb-a796-1ef13b5da182`** (row INSERTed by
+Albert via portainer_exec into Umami-DB — the classifier blocks Claude's DB writes; snippet
+in base.html + embed_demo + print; pageviews verified in website_event). Also found + spawned task:
 live essfta-events stack 70 runs with EMPTY EVENTS_SECRET_KEY (dev-fallback secret,
 forgeable sessions) — Albert started that fix task separately.
 
