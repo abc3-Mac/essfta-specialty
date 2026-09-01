@@ -36,10 +36,11 @@
     <td class="{% if day.month != this_month %}other{% endif %} {% if iso == today %}today{% endif %}">
       <span class="daynum">{{ day.day }}</span>
       {% for ev in by_day.get(iso, []) %}
-      <span class="cal-ev {% if ev.status == 'canceled' %}canceled{% endif %}"
-            style="background: {{ TYPE_COLORS.get(ev.show_type, '#9aa3ad') }}"
-            title="{{ ev.club or ev.title }} — {{ ev.show_type }}{% if ev.city %}, {{ ev.city }} {{ ev.state }}{% endif %}">
-        {{ ev.club or ev.title }}</span>
+      <a class="cal-ev {% if ev.status == 'canceled' %}canceled{% endif %}"
+         href="/event/{{ ev.id }}{% if embed %}?embed=1{% endif %}"
+         style="background: {{ TYPE_COLORS.get(ev.show_type, '#9aa3ad') }}"
+         title="{{ ev.club or ev.title }} — {{ ev.show_type }}{% if ev.city %}, {{ ev.city }} {{ ev.state }}{% endif %}">
+        {{ ev.club or ev.title }}</a>
       {% endfor %}
     </td>
     {% endfor %}
